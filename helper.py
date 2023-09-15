@@ -1,3 +1,5 @@
+import datetime
+import operator
 from dataclasses import dataclass
 
 items = []
@@ -6,12 +8,25 @@ items = []
 @dataclass
 class Item:
     text: str
+    date: datetime
     isCompleted: bool = False
 
 
-def add(text):
-    text = text.replace('b', 'bbb').replace('B', 'Bbb')
-    items.append(Item(text))
+def oneWeekFromToday():
+    today = datetime.datetime.now()
+    oneWeek = datetime.timedelta(weeks=1)
+    return today + oneWeek
+
+
+def add(text, date=None):
+    text = text.replace("b", "bbb").replace("B", "Bbb")
+
+    if date is None:
+        date = oneWeekFromToday()
+    else:
+        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+    items.append(Item(text, date))
+    items.sort(key=operator.attrgetter("date"))
 
 
 def get_all():
@@ -24,6 +39,3 @@ def get(index):
 
 def update(index):
     items[index].isCompleted = not items[index].isCompleted
-
-def delete():
-    items.clear()
